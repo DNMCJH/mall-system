@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8" />
+<title>mall-system 工作台</title>
+<style>
+  body { margin: 0; font-family: "Microsoft YaHei", sans-serif; background: #f5f6f8; color: #222; }
+  header { height: 52px; background: #1f6feb; color: #fff; display: flex; align-items: center; padding: 0 24px; font-size: 15px; }
+  main { max-width: 760px; margin: 28px auto; background: #fff; border-radius: 8px; padding: 24px; box-shadow: 0 2px 12px rgba(0,0,0,.06); }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; margin-top: 12px; }
+  th, td { border: 1px solid #e2e5ea; padding: 8px 10px; text-align: left; }
+  th { background: #f2f3f5; font-weight: 600; }
+  .calc { margin-top: 20px; display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+  input { height: 32px; padding: 0 8px; border: 1px solid #d0d3d9; border-radius: 4px; }
+  button { height: 34px; padding: 0 16px; border: 0; border-radius: 4px; background: #1f6feb; color: #fff; cursor: pointer; }
+  #out { margin-top: 12px; font-size: 14px; color: #1a7f37; }
+</style>
+</head>
+<body>
+<header>mall-system 商家后台</header>
+<main>
+  <h2 style="font-size:17px;margin:0 0 6px">优惠券核销</h2>
+  <p style="font-size:13px;color:#666;margin:0">输入订单金额与优惠券编码试算抵扣金额。</p>
+  <table>
+    <tr><th>券码</th><th>类型</th><th>门槛（分）</th><th>面额/折扣</th></tr>
+    <tr><td>FULL100</td><td>满减</td><td>10000</td><td>1000</td></tr>
+    <tr><td>DISC90</td><td>折扣</td><td>0</td><td>0.9</td></tr>
+  </table>
+  <div class="calc">
+    <input id="amount" placeholder="订单金额（分）" value="12000" />
+    <input id="code" placeholder="券码" value="FULL100" />
+    <button id="btn">计算</button>
+  </div>
+  <div id="out"></div>
+</main>
+<script>
+  document.getElementById('btn').addEventListener('click', async () => {
+    const amount = Number(document.getElementById('amount').value);
+    const code = document.getElementById('code').value;
+    const res = await fetch('/api/coupon', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ amount, coupon: { code } }) });
+    const data = await res.json();
+    document.getElementById('out').textContent = '抵扣 ' + data.discount + ' 分，应付 ' + data.payable + ' 分';
+  });
+</script>
+</body>
+</html>

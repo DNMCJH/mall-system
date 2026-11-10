@@ -1,0 +1,14 @@
+{
+  "name": "mall-system",
+  "version": "0.1.0",
+  "private": true,
+  "description": "电商促销系统（软件工程实验团队协作项目）",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}
