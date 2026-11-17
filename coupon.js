@@ -11,9 +11,9 @@ const COUPON_TYPE = Object.freeze({
 // 返回：本次可用抵扣金额（分），券不可用或金额非法时返回 0
 
 function calcDiscount(orderAmount, coupon) {
-  if (!Number.isFinite(orderAmount) || orderAmount <= 0 || !coupon) {
-    return 0;
-  }
+  // 入参校验（PM 补充）：金额非法或券对象为空时直接返回 0，避免调用方拿到异常
+  if (!Number.isFinite(orderAmount) || orderAmount <= 0) return 0;
+  if (!coupon) return 0;
 
   const { type, threshold, value, validUntil, maxDiscount } = coupon;
   if (!Number.isFinite(threshold) || threshold < 0 || orderAmount < threshold) {
