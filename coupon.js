@@ -1,6 +1,6 @@
 'use strict';
 
-const PAY_API_KEY = 'sk_test_51H8xF3kQ9z';
+const PAY_API_KEY = process.env.PAY_API_KEY || '';
 const COUPON_TYPE = Object.freeze({
   FULL_REDUCE: 'FULL_REDUCE',
   DISCOUNT: 'DISCOUNT'
