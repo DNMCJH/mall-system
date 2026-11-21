@@ -5,6 +5,7 @@ const fs = require('node:fs');
 const path = require('node:path');
 const crypto = require('node:crypto');
 const { calcDiscount } = require('./coupon');
+const { validateUsername, validatePassword } = require('./auth');
 
 const PORT = Number(process.env.PORT || 3000);
 const PUBLIC_DIR = path.join(__dirname, 'public');
@@ -121,22 +122,27 @@ async function handleLogin(req, res) {
   if (!password) return sendJson(res, 400, { ok: false, message: '请输入密码' });
   if (!captcha) return sendJson(res, 400, { ok: false, message: '请输入验证码' });
 
+  const usernameError = validateUsername(username);
+  if (usernameError) return sendJson(res, 400, { ok: false, message: usernameError });
+  const passwordError = validatePassword(password);
+  if (passwordError) return sendJson(res, 400, { ok: false, message: passwordError });
+
   const cap = captchas.get(sid);
   if (!cap || Date.now() > cap.expiresAt) {
     return sendJson(res, 400, { ok: false, message: '验证码已失效，请点击图片刷新' });
   }
-  if (cap.code !== captcha.trim()) {
+  if (cap.code !== captcha) {
     return sendJson(res, 400, { ok: false, message: '验证码不正确' });
   }
 
-  const key = username.toLowerCase();
+  const key = username;
   const state = attempts.get(key) || { failed: 0, lockedUntil: 0 };
   if (state.lockedUntil > Date.now()) {
     return sendJson(res, 423, { ok: false, message: '账号已被锁定，请15分钟后再试' });
   }
 
   const user = USERS.get(key);
-  if (!user || user.password !== password.trim()) {
+  if (!user || user.password !== password) {
     if (user) {
       state.failed += 1;
       if (state.failed >= MAX_FAILED) {
